@@ -15,13 +15,17 @@ In the functions folder, here are the major functions that I believe are worth c
 - readMCMC.py
   * This is the previously mentioned function that unpacks MCMC chains and probabilities and returns the best parameters and max L value.
   
+- SimulatePeriodograms.py
+  * This is an alteration of PeriodogramRband.py that I now use as a function generate simulated DRW and DRWSIN curves, and it can also be altered to simply save pg1302's data at the different legnths. In its current state it is generating random sigma and tau, no outlier DRW curves at the full L+C+A length.
+  
 Some other functions of note:
 - I use separateCurves.py to separate a large h5 file with many curves into individual curves to be analyzed in parallel on the cluster.
 - I am using and will use binpg1302.py and binlightcurves.py to attempt to replicate the Liu et al results (there is currently an issue with the returned magErr array).
 - The folders of functions are the very repetitive, iteratively written ones I needed to run things in parallel on the cluster.
   
-  
-Note that all of the functions have various things commented and uncommented, various changes to certain lines and specific files being read in, etc, as I just put this all on github in the somewhat random current state that I had everything in today.
+The rest of the functions are mainly things I needed to simulate different batches of curves for various tests, and a lot of them either involve cut and dry manipulation of h5 files and data, or using the SimulatePeriodograms.py function to simulate something.
+
+Note that all of the functions have various things commented and uncommented, various changes to certain lines and specific files being read in, etc, as I just put this all on github in the somewhat random current state that I had everything in today. Additionally, as I mentioned before, I began this project over a year ago with a knowledge of best practice/comfort in Python far inferior to where it is now with all of the projects and work and classes I've done, so there are some inconsistencies in style which may be confusing.
  
 Please reach out if something else is unclear,
  

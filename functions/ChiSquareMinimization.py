@@ -199,7 +199,7 @@ def drw_likelihood(sigma,log_tau,mag,magErr,MJD):
     
         cf = sl.cho_factor(C)
         CInv = sl.cho_solve(cf, np.eye(C.shape[0]))
-        LogDetC = np.sum(2*np.log(np.diag(cf[0]))) #first determinant in A8
+        LogDetC = np.sum(2*np.log(np.diag(cf[0]))) #first determinant in A8 
     
     
         L = np.ones(len(MJD))
@@ -211,11 +211,60 @@ def drw_likelihood(sigma,log_tau,mag,magErr,MJD):
         Cf = CInv - np.outer(CL, CL.T) * Cq #eq. (A7)
     
         chiSq=np.transpose(mag).dot(Cf).dot(mag) #exp eq. (A8)
-    
+        
         LogLikelihood=-0.5*LogDetC-0.5*np.log(detCqInv)-chiSq/2 #eq. (A8)
+        
+        # Chisq likelihood
+        # chiSq=np.transpose(mag).dot(CInv).dot(mag) #exp eq. (A8)  #USE FOR CHISQ  Func
+        # LogLikelihood = (-N/2) * np.log(2*np.pi) - (1/2) * LogDetC - chiSq/2 # USE FOR CHISQ Func
         
     return np.real(LogLikelihood)
 
+
+
+def chiSq_drw_likelihood(sigma, log_tau, mag, magErr, MJD):
+    if sigma < 0.00001 or sigma > 100:
+        return -np.inf
+    # elif tau < 1 or tau > 1000:
+    elif log_tau < 0 or log_tau > 3:
+        return -np.inf
+    else:
+#from kozlowski 2010
+        tx, ty = np.meshgrid(MJD, MJD)
+    
+        S = np.exp(- np.abs(tx-ty) / 10 ** log_tau)
+    
+        S *= sigma**2 #eq.(1)
+        
+        N=np.diag(magErr**2,k=0)
+        
+        C=S+N #defined below (A4)
+        
+    
+        cf = sl.cho_factor(C)
+        CInv = sl.cho_solve(cf, np.eye(C.shape[0]))
+        LogDetC = np.sum(2*np.log(np.diag(cf[0]))) #first determinant in A8 
+    
+    
+        L = np.ones(len(MJD))
+        CL = np.dot(CInv, L)
+        Cq =  1.0 / np.dot(L.T, CL) #eq. (A7)
+    
+        detCqInv = np.abs(1.0 / Cq) #second determinant in A8
+    
+        Cf = CInv - np.outer(CL, CL.T) * Cq #eq. (A7)
+    
+        # chiSq=np.transpose(mag).dot(Cf).dot(mag) #exp eq. (A8)
+        
+        # LogLikelihood=-0.5*LogDetC-0.5*np.log(detCqInv)-chiSq/2 #eq. (A8)
+        
+        # Chisq likelihood
+        chiSq=np.transpose(mag).dot(CInv).dot(mag) #exp eq. (A8)  #USE FOR CHISQ  Func
+        LogLikelihood = (-len(MJD)/2) * np.log(2*np.pi) - .5 * LogDetC - chiSq/2 # USE FOR CHISQ Func
+        
+        # Likelihood = (2*np.pi)**(-len(MJD)/2) * LogDetC**(-.5) * np.exp(-chiSq/2)
+        # LogLikelihood = np.log(Likelihood)
+    return np.real(LogLikelihood)
 
 
 
